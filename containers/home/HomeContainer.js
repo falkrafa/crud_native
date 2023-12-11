@@ -1,10 +1,13 @@
-import {React, useEffect} from 'react'
+import {React, useEffect, useState} from 'react'
 import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native'
 import Header from '../header/Header'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import PostContainer from '../Post/PostContainer';
+import PostAreaContainer from '../PostArea/PostAreaContainer';
 
 const HomeContainer = ({ navigation, route }) => {
   const { loggedIn, user, setLoggedIn, setUser } = route.params || {};
+  const [allPosts, setAllPosts] = useState([]);
 
   useEffect(() => {
     navigation.setParams({ setLoggedIn, setUser });
@@ -25,10 +28,16 @@ const HomeContainer = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       {loggedIn ? (
-        <View style={styles.head}>
-          <Text style={styles.headText}>Welcome {user.name}</Text>
-          <TouchableOpacity style={styles.button} onPress={logout}><Text style={styles.buttonText}>Logout</Text></TouchableOpacity>
-        </View>
+        <>
+          <View style={styles.head}>
+            <TouchableOpacity>
+              <Text style={styles.headText}>Welcome {user.name}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={logout}><Text style={styles.buttonText}>Logout</Text></TouchableOpacity>
+          </View>
+          <PostContainer user={user} setAllPosts={setAllPosts}/>
+          <PostAreaContainer user={user} allPosts = {allPosts} setAllPosts={setAllPosts}/>
+        </>
       ) : (
         <Header navigation={navigation}/>
       )}
@@ -49,7 +58,15 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-around',
     alignItems: 'center',
-    backgroundColor: '#0f141a',
+    backgroundColor: '#192734',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
     marginTop: 10,
     height: 100,
     borderRadius: 10,
