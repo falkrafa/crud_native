@@ -14,6 +14,10 @@ const Post = ({ user, setAllPosts}) => {
       if (response.ok) {
         const data = await response.json();
         setAllPosts(data);
+        setFormData({
+          ...formData,
+          content: '',
+        });
       } else {
         console.error('Failed to fetch posts');
       }

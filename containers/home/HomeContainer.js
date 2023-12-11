@@ -8,7 +8,7 @@ import PostAreaContainer from '../PostArea/PostAreaContainer';
 const HomeContainer = ({ navigation, route }) => {
   const { loggedIn, user, setLoggedIn, setUser } = route.params || {};
   const [allPosts, setAllPosts] = useState([]);
-
+  const userId = user?.id;
   useEffect(() => {
     navigation.setParams({ setLoggedIn, setUser });
   }, [navigation, setLoggedIn, setUser]);
@@ -25,12 +25,16 @@ const HomeContainer = ({ navigation, route }) => {
     }
   };
 
+  const Profile = () => {
+    navigation.navigate('Profile', { setAllPosts: setAllPosts });
+  }
+
   return (
     <View style={styles.container}>
       {loggedIn ? (
         <>
           <View style={styles.head}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={Profile}>
               <Text style={styles.headText}>Welcome {user.name}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={logout}><Text style={styles.buttonText}>Logout</Text></TouchableOpacity>

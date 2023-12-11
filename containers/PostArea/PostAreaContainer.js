@@ -11,20 +11,19 @@ const PostAreaContainer = ({ user, allPosts, setAllPosts }) => {
   }, []);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.HeadText}>All posts</Text>
+    <><Text style={styles.HeadText}>All posts</Text><ScrollView contentContainerStyle={styles.container}>
       {allPosts.length > 0 ? (
         allPosts.map((post) => (
           <View key={post.id} style={styles.Posts}>
-            <Text>{post.User.name}</Text>
-            <Text>{post.content}</Text>
-            <Text>{post.likes}</Text>
+            <Text style={styles.PostName}>{post.User.name}</Text>
+            <Text style={styles.PostContent}>{post.content}</Text>
+            <Text style={styles.PostContent}>{post.likes} likes</Text>
           </View>
         ))
       ) : (
-        <Text>No posts</Text>
+        <Text style={styles.erro}>No posts yet</Text>
       )}
-    </ScrollView>
+    </ScrollView></>
   );
 };
 
@@ -33,27 +32,42 @@ const styles = StyleSheet.create({
     width: 350,
     display: 'flex',
     alignItems: 'center',
-    backgroundColor: 'red',
-    marginTop: 20,
-  },
+    height: 'fit-content',
+    padding: 10,
+  },  
   HeadText: {
     fontSize: 25,
     color: '#1da1f2',
     fontWeight: 'bold',
+    marginBottom: 10,
+    marginTop: 10,
   },
   Posts: {
     width: '100%',
     height: 'fit-content',
     backgroundColor: '#192734',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    marginTop: 10,
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 30,
+    borderWidth: 1,
+    borderColor: '#38444d',
+    borderRadius: 8,
     padding: 20,
+    wordWrap: 'break-word',
+    marginBottom: 10,
+  },
+  erro:{
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+    marginTop: 10,
+  },
+  PostName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1da1f2',
+  },
+  PostContent: {
+    fontSize: 16,
+    color: '#fff',
+    marginTop: 10,
   },
 });
 

@@ -26,6 +26,7 @@ const RegisterContainer = () => {
           onChangeText={(value) => handleChange('name', value)}
           value={formData.name}
           placeholder="Name"
+          placeholderTextColor = '#aab8c2'
         />
         <Text style={styles.errorText}>{validationErrors.name}</Text>
 
@@ -34,6 +35,7 @@ const RegisterContainer = () => {
           onChangeText={(value) => handleChange('email', value)}
           value={formData.email}
           placeholder="Email"
+          placeholderTextColor = '#aab8c2'
         />
         <Text style={styles.errorText}>{validationErrors.email}</Text>
 
@@ -42,6 +44,7 @@ const RegisterContainer = () => {
           onChangeText={(value) => handleChange('password', value)}
           value={formData.password}
           placeholder="Password"
+          placeholderTextColor = '#aab8c2'
           secureTextEntry
         />
         <Text style={styles.errorText}>{validationErrors.password}</Text>
