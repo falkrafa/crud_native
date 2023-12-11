@@ -3,8 +3,8 @@ import { View, Text, TextInput, Button, Image, StyleSheet, TouchableOpacity } fr
 import RegisterLogic from './Register';
 import * as ImagePicker from 'expo-image-picker';
 
-const RegisterContainer = () => {
-  const { formData, validationErrors, handleChange, handleSubmit,} = RegisterLogic();
+const RegisterContainer = ({ navigation }) => {
+  const { formData, validationErrors, handleChange, handleSubmit,} = RegisterLogic({ navigation });
 
   const pickImage = async () => {
       const result = await ImagePicker.launchImageLibraryAsync({

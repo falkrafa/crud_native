@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 import * as Yup from 'yup';
 
-const RegisterLogic = () => {
+const RegisterLogic = ({ navigation }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -50,6 +50,7 @@ const RegisterLogic = () => {
   
       if (response.ok) {
         console.log('Registration successful');
+        navigation.navigate('Login');
       } else {
         console.error('Registration failed');
       }

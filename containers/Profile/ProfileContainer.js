@@ -9,9 +9,7 @@ import {
   Modal,
   TextInput,
 } from 'react-native';
-
 import Post from '../Post/Post';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 const ProfileContainer = ({ route }) => {
   const { user, setAllPosts } = route.params;
