@@ -8,6 +8,8 @@ import {
   ScrollView,
   Modal,
   TextInput,
+  SafeAreaView,
+  FlatList,
 } from 'react-native';
 import Post from '../Post/Post';
 import { useSelector } from 'react-redux';
@@ -80,6 +82,26 @@ const ProfileContainer = () => {
     setModalVisible(true);
   };
 
+  const renderPost = ({ item }) => (
+    <View key={item.id} style={styles.Posts}>
+                <Text style={styles.PostContent}>{item.content}</Text>
+                <Text style={styles.PostContent}>{item.likes} likes</Text>
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => openUpdateModal(item.id)}
+                  >
+                    <Text style={styles.buttonText}>Update</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => deletePost(item.id)}
+                  >
+                    <Text style={styles.buttonText}>Delete</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+  );
   return (
     <View style={styles.container}>
       {user ? (
@@ -95,28 +117,13 @@ const ProfileContainer = () => {
       {userPost.length > 0 ? (
         <>
           <Text style={styles.title}>User Posts</Text>
-          <ScrollView contentContainerStyle={styles.postContainer}>
-            {userPost.map((post) => (
-              <View key={post.id} style={styles.Posts}>
-                <Text style={styles.PostContent}>{post.content}</Text>
-                <Text style={styles.PostContent}>{post.likes} likes</Text>
-                <View style={styles.buttonContainer}>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => openUpdateModal(post.id)}
-                  >
-                    <Text style={styles.buttonText}>Update</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => deletePost(post.id)}
-                  >
-                    <Text style={styles.buttonText}>Delete</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            ))}
-          </ScrollView>
+          <SafeAreaView style={styles.postContainer}>
+            <FlatList style={{ width: '100%' }}
+              data={userPost}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={renderPost}
+              />
+          </SafeAreaView>
         </>
       ) : (
         <>
@@ -203,7 +210,7 @@ const styles = StyleSheet.create({
   },
   postContainer:{
     width: 350,
-    height: 'fit-content',
+    flex: 1,
     alignItems: 'center',
     padding: 10,
   },

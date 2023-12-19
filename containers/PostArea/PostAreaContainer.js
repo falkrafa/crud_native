@@ -1,42 +1,50 @@
-import {React, useState, useEffect} from 'react';
-import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
-import Post from '../Post/Post'
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, Image, FlatList } from 'react-native';
+import Post from '../Post/Post';
 import { useSelector } from 'react-redux';
 
 const PostAreaContainer = () => {
   const allPosts = useSelector((state) => state.post.allPosts);
-  const { fetchPosts} = Post()
+  const { fetchPosts } = Post();
 
   useEffect(() => {
     fetchPosts();
   }, []);
 
+  const renderPost = ({ item }) => (
+    <View key={item.id} style={styles.Posts}>
+      <View style={styles.Posthead}>
+        <Image source={{ uri: `http://10.0.2.2:8080/${item.User.profilePicture}` }} style={styles.image} />
+        <Text style={styles.PostName}>{item.User.name}</Text>
+      </View>
+      <Text style={styles.PostContent}>{item.content}</Text>
+      <Text style={styles.PostContent}>{item.likes} likes</Text>
+    </View>
+  );
+
   return (
-    <><Text style={styles.HeadText}>All posts</Text><ScrollView contentContainerStyle={styles.container}>
+    <>
+      <Text style={styles.HeadText}>All posts</Text>
       {allPosts.length > 0 ? (
-        allPosts.map((post) => (
-          <View key={post.id} style={styles.Posts}>
-            <View style={styles.Posthead}>
-              <Image source={{ uri: `http://10.0.2.2:8080/${post.User.profilePicture}` }} style={styles.image} />
-              <Text style={styles.PostName}>{post.User.name}</Text>
-            </View>
-            <Text style={styles.PostContent}>{post.content}</Text>
-            <Text style={styles.PostContent}>{post.likes} likes</Text>
-          </View>
-        ))
-      ) : (
-        <Text style={styles.erro}>No posts yet</Text>
-      )}
-    </ScrollView></>
+        <SafeAreaView style={styles.container}>
+          <FlatList
+            style={{ width: '100%' }}
+            data={allPosts}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderPost}
+          />
+        </SafeAreaView>
+      ):<Text style={styles.erro}>No posts yet</Text>}
+      </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     width: 350,
+    flex: 1,
     display: 'flex',
     alignItems: 'center',
-    height: 'fit-content',
     padding: 10,
   },  
   HeadText: {
