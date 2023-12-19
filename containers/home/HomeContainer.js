@@ -1,24 +1,21 @@
 import {React, useEffect, useState} from 'react'
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, Button, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import Header from '../header/Header'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PostContainer from '../Post/PostContainer';
 import PostAreaContainer from '../PostArea/PostAreaContainer';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoggedIn, setUser } from '../../Reducer/authReducer';
 
-const HomeContainer = ({ navigation, route }) => {
-  const { loggedIn, user, setLoggedIn, setUser } = route.params || {};
-  const [allPosts, setAllPosts] = useState([]);
-  const userId = user?.id;
-  useEffect(() => {
-    navigation.setParams({ setLoggedIn, setUser });
-  }, [navigation, setLoggedIn, setUser]);
+const HomeContainer = ({ navigation }) => {
+  const user = useSelector((state)=> state.auth.user)
+  const loggedIn = useSelector((state)=> state.auth.loggedIn)
+  const dispatch = useDispatch();
 
   const logout = async () => {
     try {
-      await AsyncStorage.removeItem('loggedIn');
-      await AsyncStorage.removeItem('user');
-      setLoggedIn(false);
-      setUser(null);
+      dispatch(setLoggedIn(false));
+      dispatch(setUser(null));
       navigation.navigate('Home');
     } catch (error) {
       console.error('Error during logout:', error);
@@ -26,7 +23,7 @@ const HomeContainer = ({ navigation, route }) => {
   };
 
   const Profile = () => {
-    navigation.navigate('Profile', { setAllPosts: setAllPosts });
+    navigation.navigate('Profile');
   }
 
   return (
@@ -34,13 +31,14 @@ const HomeContainer = ({ navigation, route }) => {
       {loggedIn ? (
         <>
           <View style={styles.head}>
-            <TouchableOpacity onPress={Profile}>
-              <Text style={styles.headText}>Welcome {user.name}</Text>
+            <TouchableOpacity onPress={Profile} style={styles.btn}>
+              <Image source={{ uri: `http://10.0.2.2:8080/${user.profilePicture}` }} style={styles.image} />
+              <Text style={styles.headText}>{user.name}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={logout}><Text style={styles.buttonText}>Logout</Text></TouchableOpacity>
           </View>
-          <PostContainer user={user} setAllPosts={setAllPosts}/>
-          <PostAreaContainer user={user} allPosts = {allPosts} setAllPosts={setAllPosts}/>
+          <PostContainer/>
+          <PostAreaContainer/>
         </>
       ) : (
         <Header navigation={navigation}/>
@@ -93,6 +91,19 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  image: {
+    width: 40,
+    height: 40,
+    borderRadius: 50,
+    objectFit: 'cover',
+  },
+  btn:{
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: 90,
+    justifyContent: 'space-between',
   }
 });
 

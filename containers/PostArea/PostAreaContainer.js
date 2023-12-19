@@ -1,10 +1,11 @@
 import {React, useState, useEffect} from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
 import Post from '../Post/Post'
+import { useSelector } from 'react-redux';
 
-const PostAreaContainer = ({ user, allPosts, setAllPosts }) => {
-
-  const { fetchPosts} = Post({ user, setAllPosts })
+const PostAreaContainer = () => {
+  const allPosts = useSelector((state) => state.post.allPosts);
+  const { fetchPosts} = Post()
 
   useEffect(() => {
     fetchPosts();
@@ -15,7 +16,10 @@ const PostAreaContainer = ({ user, allPosts, setAllPosts }) => {
       {allPosts.length > 0 ? (
         allPosts.map((post) => (
           <View key={post.id} style={styles.Posts}>
-            <Text style={styles.PostName}>{post.User.name}</Text>
+            <View style={styles.Posthead}>
+              <Image source={{ uri: `http://10.0.2.2:8080/${post.User.profilePicture}` }} style={styles.image} />
+              <Text style={styles.PostName}>{post.User.name}</Text>
+            </View>
             <Text style={styles.PostContent}>{post.content}</Text>
             <Text style={styles.PostContent}>{post.likes} likes</Text>
           </View>
@@ -63,12 +67,23 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#1da1f2',
+    marginLeft: 10,
   },
   PostContent: {
     fontSize: 16,
     color: '#fff',
     marginTop: 10,
   },
+  image:{
+    width: 40,
+    height: 40,
+    borderRadius: 50,
+  },
+  Posthead:{
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  }
 });
 
 export default PostAreaContainer;

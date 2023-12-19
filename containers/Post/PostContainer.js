@@ -2,15 +2,15 @@ import React from 'react'
 import { View, Text, Button, StyleSheet, TouchableOpacity, TextInput } from 'react-native'
 import Post from './Post'
 
-const PostContainer = ({ user, setAllPosts }) => {
+const PostContainer = () => {
 
-  const { handleChange, handleSub, formData } = Post({ user, setAllPosts })
+  const { handleChange, handleSub, formData } = Post()
 
   return (
     <View style={styles.container}> 
       <Text style={styles.Text}>Make a Post</Text>
         <TextInput style={styles.TextInput} placeholder="Title" multiline={true} numberOfLines={4} placeholderTextColor = '#aab8c2' value={formData.content} onChangeText={(value) => handleChange('content', value)}/>
-        <TouchableOpacity style={styles.button} onPress={handleSub}><Text style={styles.buttonText}>Submit</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => handleSub()}><Text style={styles.buttonText}>Submit</Text></TouchableOpacity>
     </View>
   )
 }

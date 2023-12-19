@@ -10,19 +10,27 @@ import {
   TextInput,
 } from 'react-native';
 import Post from '../Post/Post';
+import { useSelector } from 'react-redux';
 
-const ProfileContainer = ({ route }) => {
-  const { user, setAllPosts } = route.params;
+const ProfileContainer = () => {
   const [userPost, setUserPost] = useState([]);
+  const user = useSelector((state) => state.auth.user);
+  const token = useSelector((state) => state.auth.token);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
-  const { fetchPosts } = Post({ user, setAllPosts });
+  const { fetchPosts } = Post();
   const [formData, setFormData] = useState({
     content: '',
   });
 
   const getUserPost = async () => {
-    const response = await fetch(`http://10.0.2.2:8080/posts/user/${user.id}`);
+    const response = await fetch(`http://10.0.2.2:8080/posts/user/${user.id}`,{
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
     const data = await response.json();
     setUserPost(data);
   };
@@ -35,6 +43,7 @@ const ProfileContainer = ({ route }) => {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
     });
     const data = await response.json();
@@ -50,6 +59,7 @@ const ProfileContainer = ({ route }) => {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({
         content: formData.content,

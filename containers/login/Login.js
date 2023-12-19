@@ -1,7 +1,11 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
 import * as Yup from 'yup';
+import { useDispatch} from 'react-redux';
+import { setLoggedIn, setUser, setToken } from '../../Reducer/authReducer';
 
 const LoginLogic = ({ navigation }) => {
+    const dispatch = useDispatch();
 
     const [formData, setFormData] = useState({
         email: '',
@@ -24,7 +28,7 @@ const LoginLogic = ({ navigation }) => {
         });
       };
     
-      const handleSubmit = async (setLoggedIn, setUser) => {
+      const handleSubmit = async () => {
         try {
           await validationSchema.validate(formData, { abortEarly: false });
     
@@ -39,10 +43,10 @@ const LoginLogic = ({ navigation }) => {
           const data = await response.json();
     
           if (response.ok) {
-            setLoggedIn(true);
-            setUser(data.user);
-            navigation.navigate('Home', { loggedIn: true, user: data.user, setLoggedIn, setUser });
-
+            dispatch(setUser(data.user));
+            dispatch(setToken(data.token));
+            dispatch(setLoggedIn(true));
+            navigation.navigate('Home');
           } else {
             console.error('Login failed', data.message);
           }

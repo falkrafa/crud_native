@@ -1,7 +1,15 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAllPosts } from '../../Reducer/postReducer';
 
-const Post = ({ user, setAllPosts}) => {
-
+const Post = () => {
+  const user = useSelector((state)=> state.auth.user)
+  const token = useSelector((state)=> state.auth.token)
+  const dispatch = useDispatch();
+  const [formData, setFormData] = useState({
+    content: '',
+  });
   const fetchPosts = async () => {
     try {
       const response = await fetch('http://10.0.2.2:8080/posts', {
@@ -13,7 +21,7 @@ const Post = ({ user, setAllPosts}) => {
 
       if (response.ok) {
         const data = await response.json();
-        setAllPosts(data);
+        dispatch(setAllPosts(data));
         setFormData({
           ...formData,
           content: '',
@@ -26,22 +34,18 @@ const Post = ({ user, setAllPosts}) => {
     }
   };
 
-  const [formData, setFormData] = useState({
-    content: '',
-  });
 
   const handleChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSub = async (e) => {
-    e.preventDefault();
-
+  const handleSub = async () => {
     try {
       const response = await fetch('http://10.0.2.2:8080/posts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           content: formData.content,

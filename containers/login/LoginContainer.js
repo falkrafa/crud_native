@@ -2,8 +2,7 @@ import React from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import LoginLogic from './Login';
 
-const LoginContainer = ({ route, navigation }) => {
-  const { setLoggedIn, setUser } = route.params || {};
+const LoginContainer = ({ navigation }) => {
   const { formData, validationErrors, handleChange, handleSubmit } = LoginLogic({
     navigation,
   });
@@ -32,7 +31,7 @@ const LoginContainer = ({ route, navigation }) => {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => handleSubmit(setLoggedIn, setUser)}
+          onPress={() => handleSubmit()}
         >
           <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>
