@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   View,
   Text,
@@ -16,7 +16,10 @@ import { styles } from './ProfileStyle';
 
 const Profile = () => {
 
-  const { user, userPost, modalVisible, setModalVisible, selectedPostId, formData, setFormData, deletePost, updatePost, openUpdateModal } = ProfileContainer();
+  const { user, userPost, modalVisible, setModalVisible, selectedPostId, formData, setFormData, deletePost, updatePost, openUpdateModal, getUserPost } = ProfileContainer();
+  useEffect(() => {
+    getUserPost();
+  }, []);
   const renderPost = ({ item }) => (
     <View key={item.id} style={styles.Posts}>
                 <Text style={styles.PostContent}>{item.content}</Text>

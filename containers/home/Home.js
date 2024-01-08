@@ -6,6 +6,7 @@ import PostArea from '../PostArea/PostArea';
 import { useDispatch, useSelector } from 'react-redux';
 import { styles } from './HomeStyles';
 import HomeContainer from './HomeContainer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const Home = ({ navigation }) => {
 
   const { logout } = HomeContainer({navigation})
@@ -14,7 +15,6 @@ const Home = ({ navigation }) => {
   const Profile = () => {
     navigation.navigate('Profile');
   }
-
   return (
     <View style={styles.container}>
       {loggedIn ? (

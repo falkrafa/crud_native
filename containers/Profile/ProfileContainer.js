@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import PostContainer from '../Post/PostContainer';
 import { useSelector } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { profileProcessor } from '../../Processor/ProfileProcessor';
+import { delPost, updPost } from '../../Processor/PostProcessor';
 
 const ProfileContainer = () => {
 
   const [userPost, setUserPost] = useState([]);
   const user = useSelector((state) => state.auth.user);
-  const token = useSelector((state) => state.auth.token);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
   const { fetchPosts } = PostContainer();
@@ -15,52 +17,26 @@ const ProfileContainer = () => {
   })
 
   const getUserPost = async () => {
-    const response = await fetch(`http://10.0.2.2:8080/posts/user/${user.id}`,{
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-    const data = await response.json();
-    setUserPost(data);
+    const storedValue = await AsyncStorage.getItem('token');
+    const token = storedValue ? JSON.parse(storedValue) : null;
+    await profileProcessor(setUserPost, token, user.id);
   };
-  useEffect(() => {
-    getUserPost();
-  }, []);
 
   const deletePost = async (id) => {
-    const response = await fetch(`http://10.0.2.2:8080/posts/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-    const data = await response.json();
-    if (data) {
-      getUserPost();
-      fetchPosts();
-    }
+    const storedValue = await AsyncStorage.getItem('token');
+    const token = storedValue ? JSON.parse(storedValue) : null;
+    await delPost(id, token);
+    await getUserPost();
+    await fetchPosts();
   };
 
   const updatePost = async (id) => {
-    const response = await fetch(`http://10.0.2.2:8080/posts/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        content: formData.content,
-      }),
-    });
-    const data = await response.json();
-    if (data) {
-      getUserPost();
-      fetchPosts();
-      setModalVisible(false);
-    }
+    const storedValue = await AsyncStorage.getItem('token');
+    const token = storedValue ? JSON.parse(storedValue) : null;
+    await updPost(id, formData, token);
+    await getUserPost();
+    await fetchPosts();
+    setModalVisible(false);
   };
 
   const openUpdateModal = (id) => {
@@ -81,6 +57,7 @@ const ProfileContainer = () => {
     openUpdateModal,
     setModalVisible,
     setFormData,
+    getUserPost,
   };
 };
 

@@ -5,7 +5,6 @@ const authSlice = createSlice({
     initialState: {
         loggedIn: false,
         user: null,
-        token: null,
     },
     reducers: {
         setLoggedIn: (state, action) => {
@@ -14,11 +13,8 @@ const authSlice = createSlice({
         setUser: (state, action) => {
             state.user = action.payload;
         },
-        setToken: (state, action) => {
-            state.token = action.payload;
-        },
     }
 });
 
-export const { setLoggedIn, setUser, setToken } = authSlice.actions;
+export const { setLoggedIn, setUser} = authSlice.actions;
 export default authSlice.reducer;
