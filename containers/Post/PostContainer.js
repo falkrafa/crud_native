@@ -1,69 +1,75 @@
-import React from 'react'
-import { View, Text, Button, StyleSheet, TouchableOpacity, TextInput } from 'react-native'
-import Post from './Post'
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAllPosts } from '../../Reducer/postReducer';
 
 const PostContainer = () => {
-
-  const { handleChange, handleSub, formData } = Post()
-
-  return (
-    <View style={styles.container}> 
-      <Text style={styles.Text}>Make a Post</Text>
-        <TextInput style={styles.TextInput} placeholder="Title" multiline={true} numberOfLines={4} placeholderTextColor = '#aab8c2' value={formData.content} onChangeText={(value) => handleChange('content', value)}/>
-        <TouchableOpacity style={styles.button} onPress={() => handleSub()}><Text style={styles.buttonText}>Submit</Text></TouchableOpacity>
-    </View>
-  )
-}
-
-const styles = StyleSheet.create({
-    container: {
-        width: '80%',
-        backgroundColor: '#192734',
-        shadowColor: '#000',
-        shadowOffset: {
-        width: 0,
-        height: 2,
+  const user = useSelector((state)=> state.auth.user)
+  const token = useSelector((state)=> state.auth.token)
+  const dispatch = useDispatch();
+  const [formData, setFormData] = useState({
+    content: '',
+  });
+  const fetchPosts = async () => {
+    try {
+      const response = await fetch('http://10.0.2.2:8080/posts', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-        display: 'flex',
-        alignItems: 'center',
-        marginTop: 30,
-        borderRadius: 10,
-        padding: 20,
-    },
-    Text: {
-        color: '#1da1f2',
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    TextInput:{
-        height: 60,
-        width: 250,
-        marginBottom: 10,
-        paddingHorizontal: 10,
-        backgroundColor: '#192734',
-        borderRadius: 5,
-        borderWidth: 1,
-        borderColor: '#38444d',
-        color: '#fff',
-    },
-    button: {
-        backgroundColor: '#1da1f2',
-        paddingVertical: 10,
-        borderRadius: 5,
-        alignItems: 'center',
-        marginTop: 15,
-        width: 250,
-      },
-      buttonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
-      },
+      });
 
-    })
+      if (response.ok) {
+        const data = await response.json();
+        dispatch(setAllPosts(data));
+        setFormData({
+          ...formData,
+          content: '',
+        });
+      } else {
+        console.error('Failed to fetch posts');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
-export default PostContainer
+
+  const handleChange = (name, value) => {
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSub = async () => {
+    try {
+      const response = await fetch('http://10.0.2.2:8080/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          content: formData.content,
+          likes: 0,
+          userId: user.id,
+        }),
+      });
+
+      if (response.ok) {
+        console.log('Post created successfully');
+        fetchPosts();
+      } else {
+        console.error('Failed to create post');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  return {
+    handleChange,
+    handleSub,
+    formData,
+    fetchPosts,
+  };
+};
+
+export default PostContainer;

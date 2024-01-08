@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableHighlight } from 'react-native';
-
+import { styles } from './HeaderStyle';
 const Header = ({ navigation }) => {
   return (
     <View style={styles.container}>
@@ -23,30 +23,5 @@ const Header = ({ navigation }) => {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    height: '15%',
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  button: {
-    height: '100%',
-    width: '30%',
-    justifyContent: 'space-around',
-  },
-  touchableButton: {
-    backgroundColor: '#3498db',
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-  },
-  buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-  },
-});
 
 export default Header;

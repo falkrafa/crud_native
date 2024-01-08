@@ -1,93 +1,68 @@
-import React from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
-import LoginLogic from './Login';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState } from 'react';
+import * as Yup from 'yup';
+import { useDispatch} from 'react-redux';
+import { setLoggedIn, setUser, setToken } from '../../Reducer/authReducer';
 
-const LoginContainer = ({ navigation }) => {
-  const { formData, validationErrors, handleChange, handleSubmit } = LoginLogic({
-    navigation,
-  });
+const LoginLogic = ({ navigation }) => {
+    const dispatch = useDispatch();
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.formContainer}>
-        <TextInput
-          style={styles.input}
-          onChangeText={(value) => handleChange('email', value)}
-          value={formData.email}
-          placeholder="Email"
-          placeholderTextColor = '#aab8c2'
-        />
-        <Text style={styles.errorText}>{validationErrors.email}</Text>
-
-        <TextInput
-          style={styles.input}
-          onChangeText={(value) => handleChange('password', value)}
-          value={formData.password}
-          placeholder="Password"
-          secureTextEntry
-          placeholderTextColor = '#aab8c2'
-        />
-        <Text style={styles.errorText}>{validationErrors.password}</Text>
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => handleSubmit()}
-        >
-          <Text style={styles.buttonText}>Submit</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+      });
+      const [validationErrors, setValidationErrors] = useState({
+        email: '',
+        password: '',
+      });
+    
+      const validationSchema = Yup.object().shape({
+        email: Yup.string().email('Invalid email').required('Email is required'),
+        password: Yup.string().required('Password is required'),
+      });
+    
+      const handleChange = (name, value) => {
+        setFormData({
+          ...formData,
+          [name]: value,
+        });
+      };
+    
+      const handleSubmit = async () => {
+        try {
+          await validationSchema.validate(formData, { abortEarly: false });
+    
+          const response = await fetch('http://10.0.2.2:8080/users/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+          });
+    
+          const data = await response.json();
+    
+          if (response.ok) {
+            dispatch(setUser(data.user));
+            dispatch(setToken(data.token));
+            dispatch(setLoggedIn(true));
+            navigation.navigate('Home');
+          } else {
+            console.error('Login failed', data.message);
+          }
+        } catch (error) {
+          if (error instanceof Yup.ValidationError) {
+            const errors = {};
+            error.inner.forEach((e) => {
+              errors[e.path] = e.message;
+            });
+            setValidationErrors(errors);
+          } else {
+            console.error('Error during login', error);
+          }
+        }
+      };
+      return { formData, validationErrors, handleChange, handleSubmit };
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#141d26',
-  },
-  formContainer: {
-    width: '80%',
-    borderRadius: 10,
-    padding: 20,
-    backgroundColor: '#192734',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  input: {
-    height: 40,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-    backgroundColor: '#192734',
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: '#38444d',
-    color: '#fff',
-  },
-  
-  
-  errorText: {
-    color: 'red',
-    marginBottom: 10,
-  },
-  button: {
-    backgroundColor: '#1da1f2',
-    paddingVertical: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
-
-export default LoginContainer;
+export default LoginLogic;

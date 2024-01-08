@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import HomeContainer from './containers/home/HomeContainer';
+import Home from './containers/home/Home';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import RegisterContainer from './containers/Register/RegisterContainer';
-import LoginContainer from './containers/login/LoginContainer';
-import ProfileContainer from './containers/Profile/ProfileContainer';
+import Register from './containers/Register/Register';
+import Login from './containers/login/Login';
+import Profile from './containers/Profile/Profile';
 import { Provider } from 'react-redux';
 import store from './Reducer/store';
-import { useDispatch, useSelector } from 'react-redux';
-import { setLoggedIn, setUser } from './Reducer/authReducer';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -24,21 +20,13 @@ export default function App() {
               backgroundColor: '#141d26',
             },
           }}>
-          <Stack.Screen name="Home" component={HomeContainer} />
-          <Stack.Screen name="Register" component={RegisterContainer} />
-          <Stack.Screen name="Login" component={LoginContainer}/>
-          <Stack.Screen name="Profile" component={ProfileContainer}/>
+          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="Register" component={Register} />
+          <Stack.Screen name="Login" component={Login}/>
+          <Stack.Screen name="Profile" component={Profile}/>
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'start',
-  },
-});

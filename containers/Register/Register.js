@@ -1,85 +1,68 @@
-import React, { useState } from 'react';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
-import * as Yup from 'yup';
+import React from 'react';
+import { View, Text, TextInput, Button, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import RegisterLogic from './RegisterContainer';
+import * as ImagePicker from 'expo-image-picker';
+import { styles } from './RegisterStyle';
 
-const RegisterLogic = ({ navigation }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    profilePicture: null,
-  });
+const Register = ({ navigation }) => {
+  const { formData, validationErrors, handleChange, handleSubmit,} = RegisterLogic({ navigation });
 
-  const [validationErrors, setValidationErrors] = useState({});
-  const formDataWithFile = new FormData();
-
-  const validationSchema = Yup.object().shape({
-    name: Yup.string().required('Username is required'),
-    email: Yup.string().email('Invalid email').required('Email is required'),
-    password: Yup.string().required('Password is required'),
-  });
-
-  const getFileNameFromUri = (uri) => {
-    const pathArray = uri.split('/');
-    const fileName = pathArray[pathArray.length - 1];
-    return fileName;
-  };
-  const handleSubmit = async () => {
-    try {
-      await validationSchema.validate(formData, { abortEarly: false });
-  
-      formDataWithFile.append('name', formData.name);
-      formDataWithFile.append('email', formData.email);
-      formDataWithFile.append('password', formData.password);
-  
-      if (formData.profilePicture) {
-        const fileName = getFileNameFromUri(formData.profilePicture.uri);
-        const fileType = fileName.split('.')[1];
-        formDataWithFile.append('profilePicture', {
-          name: `profilePicture.${fileType}`,
-          type: `image/${fileType}`,
-          uri: formData.profilePicture.uri,
-        });
-      }
-
-  
-      const response = await fetch('http://10.0.2.2:8080/users', {
-        method: 'POST',
-        body: formDataWithFile,
+  const pickImage = async () => {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
       });
-  
-      if (response.ok) {
-        console.log('Registration successful');
-        navigation.navigate('Login');
-      } else {
-        console.error('Registration failed');
-      }
-    } catch (error) {
-      if (error && error.inner) {
-        const errors = {};
-        error.inner.forEach((e) => {
-          errors[e.path] = e.message;
-        });
-        setValidationErrors(errors);
-      } else {
-        console.error('Error during validation:', error);
-      }
-    }
-  };  
+      console.log(result.assets[0]);
+      handleChange('profilePicture', result.assets[0]);
 
-  const handleChange = (name, value) => {
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
   };
 
-  return {
-    formData,
-    validationErrors,
-    handleChange,
-    handleSubmit,
-  };
+  return (
+    <View style={styles.container}>
+      <View style={styles.formContainer}>
+        <TextInput
+          style={styles.input}
+          onChangeText={(value) => handleChange('name', value)}
+          value={formData.name}
+          placeholder="Name"
+          placeholderTextColor = '#aab8c2'
+        />
+        <Text style={styles.errorText}>{validationErrors.name}</Text>
+
+        <TextInput
+          style={styles.input}
+          onChangeText={(value) => handleChange('email', value)}
+          value={formData.email}
+          placeholder="Email"
+          placeholderTextColor = '#aab8c2'
+        />
+        <Text style={styles.errorText}>{validationErrors.email}</Text>
+
+        <TextInput
+          style={styles.input}
+          onChangeText={(value) => handleChange('password', value)}
+          value={formData.password}
+          placeholder="Password"
+          placeholderTextColor = '#aab8c2'
+          secureTextEntry
+        />
+        <Text style={styles.errorText}>{validationErrors.password}</Text>
+
+        <TouchableOpacity style={styles.button} onPress={pickImage}><Text style={styles.buttonText}>Open gallery</Text></TouchableOpacity>
+        {formData.profilePicture && (
+          <View>
+            <View style={{height: 10}}></View><Text style={{color: '#fff'}}>Selected image:</Text>
+            <Image source={{ uri: formData.profilePicture.uri }} style={{ width: 200, height: 200 }} />
+          </View>
+        )}
+        <Text style={styles.errorText}>{validationErrors.profilePicture}</Text>
+
+        <TouchableOpacity style={styles.button} onPress={handleSubmit}><Text style={styles.buttonText}>Submit</Text></TouchableOpacity>
+      </View>
+    </View>
+  );
 };
 
-export default RegisterLogic;
+export default Register;
