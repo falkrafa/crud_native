@@ -3,7 +3,6 @@ import { StyleSheet, View, Text, TouchableHighlight } from 'react-native';
 import { styles } from './HeaderStyle';
 const Header = ({ navigation }) => {
   return (
-    <View style={styles.container}>
       <View style={styles.button}>
         <TouchableHighlight
           style={styles.touchableButton}
@@ -20,7 +19,6 @@ const Header = ({ navigation }) => {
           <Text style={styles.buttonText}>Register</Text>
         </TouchableHighlight>
       </View>
-    </View>
   );
 }
 
