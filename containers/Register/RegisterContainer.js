@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import * as Yup from 'yup';
+import { register } from '../../Processor/auth';
 
 const RegisterLogic = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -40,19 +41,9 @@ const RegisterLogic = ({ navigation }) => {
           uri: formData.profilePicture.uri,
         });
       }
-
+      await register(formDataWithFile, navigation);
   
-      const response = await fetch('http://10.0.2.2:8080/users', {
-        method: 'POST',
-        body: formDataWithFile,
-      });
-  
-      if (response.ok) {
-        console.log('Registration successful');
-        navigation.navigate('Login');
-      } else {
-        console.error('Registration failed');
-      }
+      
     } catch (error) {
       if (error && error.inner) {
         const errors = {};
